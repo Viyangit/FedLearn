@@ -1,0 +1,15 @@
+[package]
+name = "fedlearn-wasm"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+fedlearn-core = { path = "../fedlearn-core" }
+serde = { version = "1", features = ["derive"] }
+wasm-bindgen = "0.2"
+serde-wasm-bindgen = "0.6"
+

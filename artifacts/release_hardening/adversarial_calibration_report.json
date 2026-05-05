@@ -1,0 +1,27 @@
+{
+  "centroid": [
+    1.0,
+    1.03,
+    0.9700000000000001
+  ],
+  "threshold_matrix": [
+    {
+      "threshold": 0.2,
+      "good_kept": 3,
+      "poison_kept": false,
+      "decision": "pass"
+    },
+    {
+      "threshold": 0.0,
+      "good_kept": 3,
+      "poison_kept": false,
+      "decision": "pass"
+    },
+    {
+      "threshold": -0.2,
+      "good_kept": 3,
+      "poison_kept": false,
+      "decision": "pass"
+    }
+  ]
+}

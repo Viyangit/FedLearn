@@ -1,0 +1,47 @@
+{
+  "name": "fedlearn-core",
+  "version": "0.2.3",
+  "description": "FedLearn TypeScript browser/runtime scaffold",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Viyangit/FedLearn.git"
+  },
+  "homepage": "https://github.com/Viyangit/FedLearn",
+  "bugs": {
+    "url": "https://github.com/Viyangit/FedLearn/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "bin": {
+    "fedlearn-core": "./bin/fedlearn-core.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": false
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5"
+  }
+}

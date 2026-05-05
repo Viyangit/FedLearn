@@ -1,0 +1,241 @@
+
+FedLearn
+The AI that remembers you — without knowing anything about you.
+
+END PRODUCT EXPLAINER
+How users and developers experience FedLearn — no code, no math.
+May 2026  |  Version 1.0
+
+What Is FedLearn?
+FedLearn is a software library — an npm package called fedlearn-core. It is not an app, not a website, not a service you log into. It is a tool that developers install into their own AI products to make those products smarter, more personal, and privacy-safe.
+
+Think of it like Stripe for payments. Stripe isn't the shop — it's the invisible payment engine inside the shop. FedLearn isn't the AI assistant — it's the invisible memory and learning engine inside someone else's AI assistant.
+
+Before FedLearn, every AI assistant had the same three broken behaviours:
+
+No memory
+
+Every session started blank. The AI forgot everything from last time.
+Catastrophic forgetting
+
+Teaching the AI something new made it forget what it already knew.
+Centralised data risk
+
+Personalisation required your data to leave your device and live on a server.
+
+FedLearn solves all three in one package. The AI learns from you, remembers you across sessions, never forgets old knowledge when it learns new things, and your data never leaves your device.
+
+The Two People Who Experience FedLearn
+There are two completely different experiences of this product. The developer who builds with it, and the end user who benefits from it. Neither sees the other's world.
+
+👩‍💻  Alex
+The Developer
+Needs to add persistent personalised memory to an AI product — without building a data pipeline or risking a GDPR violation.
+
+⚖️  Sarah
+The End User (a lawyer)
+Wants an AI that learns her writing style, remembers her preferences, and never exposes her confidential legal documents.
+
+
+Alex's Experience — The Developer
+Alex is building an AI writing assistant for a law firm. His problem: the AI helps every lawyer the same generic way. It doesn't know that Sarah always writes in formal British English, that Marcus prefers bullet points, or that the firm has specific clause phrasings they always use.
+
+He could fix this by collecting everyone's writing samples on a server and training a custom model — but that means storing confidential legal documents in the cloud. The firm's clients will never accept that.
+
+He installs FedLearn in an afternoon.
+npm install fedlearn-core
+Then four lines added to his existing product:
+const adapter = await LocalAdapter.load(user.id);
+const session = adapter.beginSession();
+await session.learn(todaysInteractions);
+await adapter.apply(await session.close());
+FedLearn handles everything else — the on-device learning, the privacy math, the memory between sessions, the secure collaboration between users. Alex did not have to understand differential privacy, federated learning, or cryptography.
+
+Sarah's Experience — The End User
+Sarah opens the AI writing assistant on Monday morning. She has no idea FedLearn exists. She just uses the tool.
+
+Week 1
+The AI helps her draft contracts. It is decent but generic — American spellings, occasional informal phrasing, no awareness of firm-specific terminology.
+Week 3
+She notices the AI has quietly started matching her style. It now writes 'whilst' instead of 'while', structures clauses the way she prefers, and suggests her firm's standard liability language unprompted.
+Month 2
+The AI finishes her sentences the way she would. It knows she never uses passive voice in executive summaries. It knows the specific indemnification clause her firm uses for technology contracts.
+Month 6
+The AI is effectively a reflection of her professional voice. Every junior associate using the same tool has also improved it — but none of their confidential work has been shared with anyone.
+
+What Sarah Never Experienced
+✗
+A prompt asking her to 'train' the AI
+✗
+A data consent form for her documents to be uploaded
+✗
+Any material slowdown in normal usage based on current benchmark checks
+✗
+Her confidential legal text leaving her machine — ever
+✗
+A settings screen about privacy or data sharing
+✗
+Any awareness that other lawyers' patterns were improving her AI too
+
+
+What Actually Happened — Under the Hood
+Sarah's experience felt effortless because everything complex was invisible. Here is what FedLearn was doing the whole time — in plain language, no code.
+
+01
+Every session, a tiny personal model was built from Sarah's interactions.
+
+02
+That tiny model — called a personal adapter — lived only on her device. ~150 kilobytes. Smaller than a photo.
+
+03
+After every session, it updated. It remembered her style changes and kept them across every future session.
+
+04
+It never forgot old preferences when it learned new ones. A purpose-built forgetting-prevention system protected her accumulated knowledge.
+
+05
+Periodically, a mathematical shadow of her patterns — with all identifying information stripped and noise added — was contributed anonymously to improve the shared base model.
+
+06
+Every other lawyer using Alex's product contributed the same anonymous shadow. Everyone's base model improved. Nobody saw anyone else's work.
+
+07
+Sarah's adapter — the part that made the AI sound like her — never moved. It stayed on her device, always.
+
+
+
+The Privacy Dashboard
+If Alex chooses to build the optional dashboard — which takes a few additional lines — Sarah gets a live privacy panel inside the product. It looks like this:
+
+Your AI Memory
+────────────────────────────────────────────────────────
+Personal style learned:
+  ████████████████░░░░  82% personalised
+Privacy budget used this month:
+  ███░░░░░░░░░░░░░░░░░  1.6ε of 8.0ε total
+────────────────────────────────────────────────────────
+Your data:    Never leaves this device
+Sharing:      Anonymous contributions  ON
+Sessions:     47 learned,  all retained
+Rank:         r=8  (auto-adjusted)
+
+From this panel Sarah can:
+	•	See exactly how personalised her AI has become  — the progress bar grows as her adapter learns.
+	•	Monitor her privacy budget  — the epsilon counter shows how much anonymous contribution she has made this month.
+	•	Pause contributions at any time  — one click. Her personal AI keeps working perfectly; she just stops contributing to and benefiting from the collective pool.
+	•	Resume whenever she chooses  — no penalty, no data loss, no reset of her personal adapter.
+
+The Adapter Heat Map
+A second optional visual shows which parts of the AI Sarah's personal adapter has modified the most. Each square represents one attention head inside the model. Brighter squares mean more personalisation in that part of the AI's 'thinking'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6 layers × 6 attention heads  |  Colour intensity = degree of personalisation  |  Low (blue) → High (yellow)
+
+Why does this matter?
+Showing users which parts of the AI have been shaped by them — and giving them a real off switch — transforms privacy from a legal disclaimer into a tangible, lived experience. This is what separates FedLearn products from every other AI product on the market.
+
+Three Concrete Products Built With FedLearn
+FedLearn is not a product itself — it is infrastructure. Here are three real products that could be shipped using it as the engine.
+
+📝  Product 01 — Enterprise AI Writing Assistant
+WHO BUYS IT:  A B2B SaaS company selling to law firms, consulting firms, and banks.
+THE PROBLEM:  Their AI assistant is excellent at generic writing but cannot learn a firm's internal style, terminology, or standard clause structures without those documents leaving the client's servers.
+WITH FEDLEARN:  Each employee's AI quietly learns their individual writing style on their own device. The firm's shared writing patterns improve collectively without any document ever touching a third-party server. Legal, compliant, and more useful than any competing tool.
+
+🏥  Product 02 — Clinical Documentation Tool
+WHO BUYS IT:  A healthcare software company selling to hospitals and private practices.
+THE PROBLEM:  Doctors each have distinct note-taking styles, preferred drug terminology, and diagnostic documentation patterns. An AI that learns these would save hours per day — but patient data is subject to HIPAA and cannot be centralised.
+WITH FEDLEARN:  Each doctor's AI documentation assistant learns their specific patterns on their own device — clinic notes, referral letters, discharge summaries. The hospital's collective medical knowledge improves the base model without a single patient record ever leaving the hospital network.
+
+💻  Product 03 — Developer Code Assistant
+WHO BUYS IT:  A developer tooling company building a code assistant for engineering teams.
+THE PROBLEM:  Every engineering team has naming conventions, preferred patterns, and internal APIs that a generic code assistant knows nothing about. Teaching it requires uploading proprietary source code to a third party — a non-starter for most companies.
+WITH FEDLEARN:  Each developer's assistant learns their personal coding style on their machine. The team's shared patterns — component naming, error handling conventions, internal library usage — improve the shared team model without any proprietary code leaving the company network.
+
+
+The Scale Picture
+FedLearn becomes dramatically more powerful as more users use it. Here is why.
+
+1
+device
+learning alone
+
+
+100
+devices improve
+the shared model
+
+
+1M+
+devices make the
+base model elite
+
+
+With one user, FedLearn is a personal memory system. With one hundred users, the base model improves measurably every week. With one million users, the base model becomes world-class at your specific domain — legal writing, medical documentation, code review — while no individual ever contributed anything identifiable.
+
+This is the flywheel.
+More users → better shared base model → better personal adapters for every user → more useful product → more users. And the privacy guarantee holds at every stage, for every user, at every scale. The math does not degrade with scale — it gets stronger.
+
+
+What FedLearn Is Not
+It is worth being precise about the boundaries of the product.
+
+What people might think it is
+What it actually is
+A cloud AI service you subscribe to
+A library developers embed in their own product
+A replacement for the base AI model
+An addition that sits on top of any existing model
+A data collection system
+The opposite — a data non-collection system
+Something users install
+Something developers install; users never interact with FedLearn directly
+A way to train a bigger model on user data
+A way to personalise a model without user data ever being accessible
+A privacy policy
+A privacy guarantee enforced by mathematics and the type system, not words
+
+
+The One-Sentence Summary
+
+FedLearn is the engine that lets an AI remember you, learn from you, and grow with you — without you, your data, or your privacy ever leaving your own device.
+
+
+
+FedLearn End Product Explainer  |  Version 1.0  |  May 2026  |  fedlearn-core

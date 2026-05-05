@@ -1,0 +1,17 @@
+{
+  "vectors": [
+    {
+      "device_secret": "device-secret-alpha",
+      "round_number": 42,
+      "length": 16,
+      "expected_hex": "placeholder_alpha_round_42"
+    },
+    {
+      "device_secret": "device-secret-beta",
+      "round_number": 9,
+      "length": 16,
+      "expected_hex": "placeholder_beta_round_9"
+    }
+  ]
+}
+

@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "name": "dp_sgd_proxy",
+      "mean_ms": 1.1990228499999995,
+      "stdev_ms": 0.0631502576386476,
+      "iters": 20
+    },
+    {
+      "name": "ewc_proxy",
+      "mean_ms": 0.1149749999999998,
+      "stdev_ms": 0.0015345059465505975,
+      "iters": 20
+    },
+    {
+      "name": "lora_merge_proxy",
+      "mean_ms": 3.0879979500000014,
+      "stdev_ms": 0.07607562836643109,
+      "iters": 20
+    }
+  ]
+}

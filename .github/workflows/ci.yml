@@ -1,0 +1,38 @@
+name: FedLearn CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rust-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --workspace
+
+  determinism-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test -p fedlearn-core --test cross_backend
+
+  privacy-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test -p fedlearn-core --test privacy
+
+  js-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm --prefix packages/fedlearn-js ci
+      - run: npm --prefix packages/fedlearn-js run build
+

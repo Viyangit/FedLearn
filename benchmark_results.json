@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "name": "dp_sgd_placeholder",
+      "mean_ms": 0.3882831999999836,
+      "stdev_ms": 0.006608780625797725,
+      "iters": 5
+    },
+    {
+      "name": "ewc_placeholder",
+      "mean_ms": 0.4040167999999955,
+      "stdev_ms": 0.03784340799873505,
+      "iters": 5
+    },
+    {
+      "name": "lora_merge_placeholder",
+      "mean_ms": 0.3840081999999967,
+      "stdev_ms": 0.0011867682840270356,
+      "iters": 5
+    }
+  ]
+}

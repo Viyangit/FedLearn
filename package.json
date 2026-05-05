@@ -1,0 +1,22 @@
+{
+  "name": "fedlearn-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FedLearn workspace integration scaffold",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test:rust": "cargo test --workspace",
+    "build:js": "npm --prefix packages/fedlearn-js run build",
+    "build:ui": "npm --prefix packages/fedlearn-ui run build",
+    "test:js": "npm --prefix packages/fedlearn-js test",
+    "test:ui": "npm --prefix packages/fedlearn-ui test",
+    "pack:js:dry-run": "cd packages/fedlearn-js && npm pack --dry-run",
+    "pack:ui:dry-run": "cd packages/fedlearn-ui && npm pack --dry-run",
+    "publish:js:dry-run": "cd packages/fedlearn-js && npm publish --dry-run",
+    "publish:ui:dry-run": "cd packages/fedlearn-ui && npm publish --dry-run",
+    "verify:all": "npm run test:rust && npm run build:js && npm run build:ui && npm run test:js && npm run test:ui && npm run pack:js:dry-run && npm run pack:ui:dry-run && npm run publish:js:dry-run && npm run publish:ui:dry-run"
+  }
+}
+
