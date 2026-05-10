@@ -1,0 +1,54 @@
+{
+  "name": "@viyrockan/fedlearn-adapter",
+  "version": "0.1.1",
+  "type": "module",
+  "description": "On-device LoRA adapter (~150KB) with EWC continual learning",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "napi": {
+    "name": "fedlearn-adapter",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "aarch64-apple-darwin",
+        "x86_64-unknown-linux-gnu",
+        "x86_64-pc-windows-msvc"
+      ]
+    }
+  },
+  "scripts": {
+    "rename-native": "node -e \"import fs from 'node:fs'; if (fs.existsSync('index.js')) fs.renameSync('index.js','native.cjs'); if (fs.existsSync('index.d.ts')) fs.renameSync('index.d.ts','native.d.ts')\"",
+    "build": "napi build --platform --release && npm run rename-native && tsc",
+    "build:debug": "napi build --platform && npm run rename-native && tsc",
+    "artifacts": "napi artifacts",
+    "test": "node --test __test__/adapter.test.mjs",
+    "prepublishOnly": "npm run build && node -e \"import { createRequire } from 'module'; createRequire(import.meta.url)('./native.cjs');\""
+  },
+  "optionalDependencies": {
+    "@viyrockan/fedlearn-adapter-darwin-arm64": "0.1.0",
+    "@viyrockan/fedlearn-adapter-darwin-x64": "0.1.0",
+    "@viyrockan/fedlearn-adapter-linux-x64-gnu": "0.1.0",
+    "@viyrockan/fedlearn-adapter-win32-x64-msvc": "0.1.0"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.0",
+    "typescript": "^5.4.0"
+  },
+  "files": [
+    "dist",
+    "native.cjs",
+    "native.d.ts",
+    "*.node",
+    "README.md"
+  ],
+  "license": "MIT"
+}

@@ -1,16 +1,8 @@
 {
-  "name": "fedlearn-core",
-  "version": "0.2.5",
-  "description": "FedLearn TypeScript browser/runtime scaffold",
+  "name": "@viyrockan/fedlearn-orchestrator",
+  "version": "0.1.1",
+  "description": "Guaranteed per-turn orchestration wrapper for FedLearn MCP tool flow",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Viyangit/FedLearn.git"
-  },
-  "homepage": "https://github.com/Viyangit/FedLearn",
-  "bugs": {
-    "url": "https://github.com/Viyangit/FedLearn/issues"
-  },
   "type": "module",
   "main": "dist/index.js",
   "exports": {
@@ -19,15 +11,13 @@
       "default": "./dist/index.js"
     }
   },
-  "types": "dist/index.d.ts",
   "bin": {
-    "fedlearn-core": "bin/fedlearn-core.mjs"
+    "fedlearn-guaranteed-chat": "bin/fedlearn-guaranteed-chat.mjs"
   },
   "files": [
     "dist",
     "bin",
     "README.md",
-    "CHANGELOG.md",
     "LICENSE"
   ],
   "engines": {
@@ -39,9 +29,13 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "fedlearn-core": "^0.2.4"
   },
   "devDependencies": {
     "typescript": "5.4.5"
   }
 }
+

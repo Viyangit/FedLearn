@@ -1,0 +1,44 @@
+{
+  "name": "@viyrockan/fedlearn",
+  "version": "0.1.2",
+  "description": "Single CLI entrypoint for FedLearn dashboard and Cursor disk watcher",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "fedlearn": "bin/fedlearn.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@viyrockan/fedlearn-ui": "^0.1.1",
+    "@viyrockan/fedlearn-watcher": "^0.1.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Viyangit/FedLearn.git"
+  },
+  "homepage": "https://github.com/Viyangit/FedLearn",
+  "bugs": {
+    "url": "https://github.com/Viyangit/FedLearn/issues"
+  },
+  "keywords": [
+    "fedlearn",
+    "cli",
+    "federated-learning",
+    "cursor"
+  ]
+}

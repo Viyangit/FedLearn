@@ -1,11 +1,11 @@
 {
-  "name": "fedlearn-ui",
-  "version": "0.1.0",
+  "name": "@viyrockan/fedlearn-ui",
+  "version": "0.1.2",
   "description": "FedLearn persistent terminal dashboard UI",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "fedlearn-ui": "./bin/fedlearn-ui.mjs"
+    "fedlearn-ui": "bin/fedlearn-ui.mjs"
   },
   "files": [
     "bin",
@@ -17,6 +17,10 @@
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
-    "fedlearn-core": "^0.2.2"
+    "fedlearn-core": "^0.2.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": false
   }
 }

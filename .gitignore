@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# OS / editor
+.DS_Store
+
+# FedLearn local runtime (never commit)
+.fedlearn/
+.fedlearn-local-adapters.json
+**/.fedlearn-local-adapters.json
+
+# Cursor / IDE artifacts
+.cursor/debug*.log
+.cursor/rules/fedlearn.generated.mdc
+
+# Regenerated benchmarks (canonical copies under artifacts/release_hardening/)
+artifacts/efficiency/

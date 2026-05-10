@@ -1,16 +1,8 @@
 {
-  "name": "fedlearn-core",
-  "version": "0.2.5",
-  "description": "FedLearn TypeScript browser/runtime scaffold",
+  "name": "@viyrockan/fedlearn-watcher",
+  "version": "0.1.2",
+  "description": "FedLearn Cursor disk watcher: learn from state.vscdb read-only, write .cursor/rules/fedlearn.generated.mdc",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Viyangit/FedLearn.git"
-  },
-  "homepage": "https://github.com/Viyangit/FedLearn",
-  "bugs": {
-    "url": "https://github.com/Viyangit/FedLearn/issues"
-  },
   "type": "module",
   "main": "dist/index.js",
   "exports": {
@@ -19,15 +11,13 @@
       "default": "./dist/index.js"
     }
   },
-  "types": "dist/index.d.ts",
   "bin": {
-    "fedlearn-core": "bin/fedlearn-core.mjs"
+    "fedlearn-watcher": "bin/fedlearn-watcher.mjs"
   },
   "files": [
     "dist",
     "bin",
     "README.md",
-    "CHANGELOG.md",
     "LICENSE"
   ],
   "engines": {
@@ -39,9 +29,14 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "fedlearn-core": "^0.2.4"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
     "typescript": "5.4.5"
   }
 }

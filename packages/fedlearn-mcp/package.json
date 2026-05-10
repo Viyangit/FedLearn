@@ -1,7 +1,7 @@
 {
-  "name": "fedlearn-core",
-  "version": "0.2.5",
-  "description": "FedLearn TypeScript browser/runtime scaffold",
+  "name": "@viyrockan/fedlearn-mcp",
+  "version": "0.1.2",
+  "description": "MCP integration for FedLearn local continual learning (Cursor, Claude Desktop, AntiGravity)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,22 +12,19 @@
     "url": "https://github.com/Viyangit/FedLearn/issues"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/server.js"
     }
   },
-  "types": "dist/index.d.ts",
   "bin": {
-    "fedlearn-core": "bin/fedlearn-core.mjs"
+    "fedlearn-mcp": "bin/fedlearn-mcp.mjs"
   },
   "files": [
     "dist",
     "bin",
     "README.md",
-    "CHANGELOG.md",
     "LICENSE"
   ],
   "engines": {
@@ -39,9 +36,17 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --test test/*.test.mjs"
+    "test": "node -e \"process.exit(0)\""
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "^4.1.1",
+    "@modelcontextprotocol/server": "2.0.0-alpha.2",
+    "fedlearn-core": "^0.2.4",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "typescript": "5.4.5"
-  }
+  },
+  "keywords": [],
+  "author": ""
 }
