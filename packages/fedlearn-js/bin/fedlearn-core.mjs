@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
-import { LocalAdapter, wasmHealthCheck, verifyLocalDataFlow } from "../dist/index.js";
+import {
+  LocalAdapter,
+  barWidth,
+  sessionLabel,
+  wasmHealthCheck,
+  verifyLocalDataFlow
+} from "../dist/index.js";
 
 function printUsage() {
   console.log("fedlearn-core CLI");
@@ -17,32 +23,27 @@ function progressBar(percent, width = 20) {
   return `${"█".repeat(filled)}${"░".repeat(width - filled)}  ${clamped.toFixed(0)}%`;
 }
 
-function personalizationFromSessions(sessionsRetained) {
-  if (sessionsRetained <= 0) {
-    return 0;
-  }
-  return Math.min(100, 12 * Math.log2(sessionsRetained + 1) + sessionsRetained * 2.5);
-}
-
 async function runDashboard() {
   const userId = process.env.FEDLEARN_USER_ID ?? "cli-dashboard";
   const adapter = await LocalAdapter.load(userId);
   const summary = adapter.memorySummary();
-  const personalization = personalizationFromSessions(summary.sessionsRetained);
+  const coverageWidth = barWidth(summary.sessionsRetained);
   const budgetPercent = (summary.consumedEpsilon / summary.totalEpsilon) * 100;
   const budgetBar = `${"█".repeat(Math.max(1, Math.round((budgetPercent / 100) * 20)))}${"░".repeat(
     20 - Math.max(1, Math.round((budgetPercent / 100) * 20))
   )}`;
   console.log("Your AI Memory");
   console.log("────────────────────────────────────────────────────────");
-  console.log("Personal style learned:");
-  console.log(`  ${progressBar(personalization)} personalised`);
+  console.log("Pattern coverage (from session count; not model weights):");
+  console.log(`  ${progressBar(coverageWidth)}`);
   console.log("Privacy budget used this month:");
-  console.log(`  ${budgetBar}  ${summary.consumedEpsilon.toFixed(1)}ε of ${summary.totalEpsilon.toFixed(1)}ε total`);
+  console.log(
+    `  ${budgetBar}  ${summary.consumedEpsilon.toFixed(1)}ε of ${summary.totalEpsilon.toFixed(1)}ε total`
+  );
   console.log("────────────────────────────────────────────────────────");
   console.log("Your data:    Never leaves this device");
   console.log(`Sharing:      Anonymous contributions  ${summary.contributionEnabled ? "ON" : "PAUSED"}`);
-  console.log(`Sessions:     ${summary.sessionsRetained} learned,  all retained`);
+  console.log(`              ${sessionLabel(summary.sessionsRetained)}`);
   console.log(`Rank:         ${summary.autoAdjustedRankLabel}`);
 }
 
@@ -78,6 +79,3 @@ if (!command) {
   printUsage();
   process.exitCode = 1;
 }
-
-export { personalizationFromSessions };
-

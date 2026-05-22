@@ -5,3 +5,4 @@ export { openAdapterDb, saveAdapterRecord, loadAdapterRecord } from "./browser/a
 export { validateNoForbiddenFields } from "./browser/adapter_store.js";
 export { LocalAdapter, LocalSession } from "./local_adapter.js";
 export { verifyLocalDataFlow } from "./local_adapter.js";
+export { adaptivePct, barWidth, macroProgress, microProgress, personalisationPct, sessionDelta, sessionLabel } from "./personalisation.js";

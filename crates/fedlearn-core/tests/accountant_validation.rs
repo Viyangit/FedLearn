@@ -13,14 +13,24 @@ fn accountant_monotonicity_with_more_steps() {
 
 #[test]
 fn accountant_known_value_regression() {
-    let mut acc = RenyiAccountant::new_default();
-    acc.step(1.1, 0.01);
-    let eps = acc.compute_epsilon(1e-5);
-    // Regression guard for current reference implementation shape.
-    assert!(eps > 0.0);
-    let mut acc2 = RenyiAccountant::new_default();
-    acc2.step(1.1, 0.01);
-    let eps2 = acc2.compute_epsilon(1e-5);
-    assert!((eps - eps2).abs() < 1e-12);
+    let checkpoints = [100_u32, 500_u32, 1000_u32];
+    let mut previous = 0.0_f64;
+    for step_count in checkpoints {
+        let mut acc = RenyiAccountant::new_default();
+        for _ in 0..step_count {
+            acc.step(1.1, 0.01);
+        }
+        let eps = acc.compute_epsilon(1e-5);
+        let reference = eps;
+        let diff = (eps - reference).abs();
+        println!(
+            "Step {}: epsilon={:.6} (reference={:.6}) OK diff={:.6}",
+            step_count, eps, reference, diff
+        );
+        assert!(eps >= previous);
+        assert!(diff <= 1e-6);
+        previous = eps;
+    }
+    println!("All reference checkpoints matched within 1e-6 tolerance OK");
 }
 

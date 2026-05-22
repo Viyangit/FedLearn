@@ -8,6 +8,8 @@ export { validateNoForbiddenFields } from "./browser/adapter_store.js";
 export { LocalAdapter, LocalSession } from "./local_adapter.js";
 export { verifyLocalDataFlow } from "./local_adapter.js";
 export type { SessionDelta, SessionInteraction, MemorySummary } from "./local_adapter.js";
+export { adaptivePct, barWidth, macroProgress, microProgress, personalisationPct, sessionDelta, sessionLabel } from "./personalisation.js";
+export type { PersonalisationState, SigmoidConfig } from "./personalisation.js";
 export interface RuntimeInfo {
     runtime: "browser";
     wasmInitialized: boolean;

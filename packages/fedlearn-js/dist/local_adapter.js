@@ -1,6 +1,8 @@
 import { loadAdapterRecord, saveAdapterRecord } from "./browser/adapter_store.js";
 const inMemoryStore = new Map();
 const NODE_STORE_FILE = ".fedlearn-local-adapters.json";
+/** Node only: set to an absolute path to share one store across terminals / tools. */
+const NODE_STORE_ENV = "FEDLEARN_LOCAL_STORE";
 function hasIndexedDb() {
     return typeof globalThis !== "undefined" && "indexedDB" in globalThis;
 }
@@ -39,10 +41,16 @@ async function nodeStorePath() {
         return null;
     }
     // @ts-ignore dynamic import only resolved at node runtime
-    const os = await import("node:os");
-    // @ts-ignore dynamic import only resolved at node runtime
-    const path = await import("node:path");
-    return path.join(os.tmpdir(), NODE_STORE_FILE);
+    const pathMod = await import("node:path");
+    const env = (globalThis.process ?? {})
+        ?.env;
+    const explicit = env?.[NODE_STORE_ENV]?.trim();
+    if (explicit) {
+        return explicit;
+    }
+    // Resolve from cwd so `fedlearn-ui` and `fedlearn-core` agree when run from the same directory.
+    const cwd = globalThis.process?.cwd?.() ?? ".";
+    return pathMod.join(cwd, NODE_STORE_FILE);
 }
 async function hydrateNodeStoreFromDisk() {
     const storePath = await nodeStorePath();
@@ -78,19 +86,33 @@ async function flushNodeStoreToDisk() {
 export class LocalSession {
     sessionId;
     startTimestamp;
+    onAutoCommit;
+    autoCommitThreshold;
     interactions = [];
-    constructor(sessionId, startTimestamp = Date.now()) {
+    autoCommitIndex = 0;
+    constructor(sessionId, startTimestamp = Date.now(), onAutoCommit, autoCommitThreshold = 5) {
         this.sessionId = sessionId;
         this.startTimestamp = startTimestamp;
+        this.onAutoCommit = onAutoCommit;
+        this.autoCommitThreshold = autoCommitThreshold;
     }
     async learn(interactions) {
         this.interactions.push(...interactions);
+        if (this.onAutoCommit && this.interactions.length >= this.autoCommitThreshold) {
+            const delta = this.buildDelta(`${this.sessionId}-auto-${this.autoCommitIndex}`);
+            this.autoCommitIndex += 1;
+            await this.onAutoCommit(delta);
+            this.interactions.length = 0;
+        }
     }
     async close() {
+        return this.buildDelta(this.sessionId);
+    }
+    buildDelta(sessionId) {
         const count = this.interactions.length;
         const summedLoss = this.interactions.reduce((acc, value) => acc + (value.loss ?? 0), 0);
         return {
-            sessionId: this.sessionId,
+            sessionId,
             interactionCount: count,
             averageLoss: count > 0 ? summedLoss / count : 0,
             generatedAt: this.startTimestamp
@@ -121,9 +143,12 @@ export class LocalAdapter {
     }
     beginSession(sessionId) {
         const resolvedSessionId = sessionId ?? `${this.record.userId}-${Date.now()}`;
-        return new LocalSession(resolvedSessionId);
+        return new LocalSession(resolvedSessionId, Date.now(), async (delta) => this.apply(delta), 5);
     }
     async apply(delta) {
+        if (delta.interactionCount <= 0) {
+            return;
+        }
         this.record.sessionCount += 1;
         this.record.lastUpdated = Date.now();
         this.record.budgetState.roundCount += 1;

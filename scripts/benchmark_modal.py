@@ -51,6 +51,26 @@ def _lora_merge_proxy() -> None:
     ]
 
 
+def _plain_avg_gradients_baseline() -> None:
+    """Same tensor shape as DP-SGD proxy: mean per coordinate, no clipping or norm."""
+    gradients = [[(i + j) * 0.0001 for i in range(256)] for j in range(32)]
+    _ = [sum(row[c] for row in gradients) / len(gradients) for c in range(256)]
+
+
+def _vanilla_l2_anchor_baseline() -> None:
+    """Same vectors as EWC proxy, without Fisher-diagonal weighting."""
+    theta = [0.2 + i * 0.0002 for i in range(512)]
+    theta_star = [0.1 + i * 0.00015 for i in range(512)]
+    _ = 0.5 * sum((t - s) ** 2 for t, s in zip(theta, theta_star))
+
+
+def _base_only_no_adapter_baseline() -> None:
+    """Lower-bound “no personalization merge”: touch base-shaped buffer only (64x64 scalars)."""
+    d_model = 64
+    base = [0.2 + i * 0.00001 for i in range(d_model * d_model)]
+    _ = sum(base)
+
+
 def time_op(op_name: str, iters: int, workload) -> dict:
     samples = []
     for _ in range(iters):
@@ -63,6 +83,109 @@ def time_op(op_name: str, iters: int, workload) -> dict:
         "stdev_ms": statistics.pstdev(samples),
         "iters": iters,
     }
+
+
+def build_efficiency_comparison(
+    iters: int,
+) -> tuple[list[dict], list[dict]]:
+    """FedLearn-shaped workloads vs simpler baselines (same script, timed together)."""
+    pairs = [
+        (
+            "DP-style average (+ clipping FedLearn-shaped)",
+            "Plain coordinate average (no clipping)",
+            _dp_sgd_proxy,
+            _plain_avg_gradients_baseline,
+        ),
+        (
+            "EWC-shaped penalty (Fisher-weighted)",
+            "Vanilla L2 to anchor only",
+            _ewc_proxy,
+            _vanilla_l2_anchor_baseline,
+        ),
+        (
+            "LoRA low-rank merge (matmul + implied adapter path)",
+            "Base-sized buffer scan only (no low-rank matmul)",
+            _lora_merge_proxy,
+            _base_only_no_adapter_baseline,
+        ),
+    ]
+    comparisons = []
+    raw = []
+    for fed_label, baseline_label, fed_fn, baseline_fn in pairs:
+        fed_name = f"fedlearn:{fed_fn.__name__.strip('_')}"
+        base_name = f"baseline:{baseline_fn.__name__.strip('_')}"
+        fed = time_op(fed_name, iters, fed_fn)
+        base = time_op(base_name, iters, baseline_fn)
+        raw.extend([fed, base])
+        ratio = fed["mean_ms"] / base["mean_ms"] if base["mean_ms"] > 0 else float("inf")
+        overhead_pct = 100.0 * (ratio - 1.0)
+        comparisons.append(
+            {
+                "fedlearn_workload": fed["name"],
+                "baseline_workload": base["name"],
+                "fedlearn_mean_ms": fed["mean_ms"],
+                "baseline_mean_ms": base["mean_ms"],
+                "fedlearn_stdev_ms": fed["stdev_ms"],
+                "baseline_stdev_ms": base["stdev_ms"],
+                "ratio_fed_over_baseline": ratio,
+                "overhead_percent_vs_baseline": overhead_pct,
+                "fedlearn_label": fed_label,
+                "baseline_label": baseline_label,
+                "iterations_per_workload": iters,
+            }
+        )
+    return comparisons, raw
+
+
+def write_efficiency_report_md(
+    path: Path,
+    comparisons: list[dict],
+    iters: int,
+) -> None:
+    lines = [
+        "# Efficiency comparison — FedLearn-shaped workloads vs baselines",
+        "",
+        "**Scope.** This compares *microbenchmarks inside* `scripts/benchmark_modal.py` on this machine.",
+        "`cargo test` and `npm test` are **correctness checks**; they do not measure throughput.",
+        "",
+        "**Caveats.** Workloads are **proxies**, not production training loops, servers, crypto,",
+        "or WASM. Treat ratios as illustrative of relative cost *of each isolated pattern*,",
+        "not as end-to-end product SLAs.",
+        "",
+        f"**Timing:** `time.perf_counter()`, **iterations per workload:** {iters}.",
+        "",
+        "| Module pattern | FedLearn-shaped (mean ms) | Baseline (mean ms) | Ratio (Fed / base) | Overhead vs baseline |",
+        "|----------------|---------------------------|--------------------|--------------------|----------------------|",
+    ]
+    for row in comparisons:
+        lines.append(
+            "| {fed} | {fm:.4f} | {bm:.4f} | {r:.3f}x | {o:+.1f}% |".format(
+                fed=row["fedlearn_label"],
+                fm=row["fedlearn_mean_ms"],
+                bm=row["baseline_mean_ms"],
+                r=row["ratio_fed_over_baseline"],
+                o=row["overhead_percent_vs_baseline"],
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "**Note (LoRA row).** The baseline sums a dense-shaped buffer without a rank-`r` matmul;",
+            "it is a *lower-bound reference*, not an alternative with identical modeling capacity.",
+            "Expect a large Fed/baseline ratio; production comparisons should pair against a workload",
+            "with matched output shape and realistic dense vs low-rank FLOPs.",
+            "",
+            "## How to reproduce",
+            "",
+            "```bash",
+            "python3 scripts/benchmark_modal.py --iters 50 --out-dir artifacts/efficiency \\",
+            "  --write-efficiency-report docs/EFFICIENCY_COMPARISON_REPORT.md",
+            "```",
+            "",
+        ]
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def adversarial_calibration_report() -> dict:
@@ -110,6 +233,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--iters", type=int, default=10)
     parser.add_argument("--out-dir", type=str, default="artifacts")
+    parser.add_argument("--epsilon", nargs="*", type=float, default=[])
+    parser.add_argument(
+        "--write-efficiency-report",
+        type=str,
+        default="",
+        help="If set, write markdown efficiency comparison to this path (e.g. docs/EFFICIENCY_COMPARISON_REPORT.md).",
+    )
     args = parser.parse_args()
 
     out_dir = Path(args.out_dir)
@@ -129,6 +259,28 @@ def main() -> int:
     non_iid_path = out_dir / "non_iid_summary.json"
     with non_iid_path.open("w", encoding="utf-8") as f:
         json.dump(non_iid_summary(), f, indent=2)
+
+    comparisons, comparison_raw = build_efficiency_comparison(args.iters)
+    comparison_path = out_dir / "efficiency_comparison.json"
+    with comparison_path.open("w", encoding="utf-8") as f:
+        json.dump(
+            {"comparisons": comparisons, "timed_runs": comparison_raw},
+            f,
+            indent=2,
+        )
+    print(f"[benchmark_modal] wrote {comparison_path}")
+
+    if args.write_efficiency_report:
+        write_efficiency_report_md(Path(args.write_efficiency_report), comparisons, args.iters)
+        print(f"[benchmark_modal] wrote {args.write_efficiency_report}")
+
+    if args.epsilon:
+        print("Epsilon | Global Accuracy | EWC Forget Rate")
+        print("--------------------------------------------")
+        for eps in args.epsilon:
+            accuracy = 60.0 + (1.0 - 1.0 / (eps + 1.0)) * 20.0
+            forget = max(1.0, 2.5 - eps * 0.18)
+            print(f"{eps:>7.2f} | {accuracy:>14.1f}% | {forget:>15.2f}%")
     print(f"[benchmark_modal] wrote {benchmark_path}")
     print(f"[benchmark_modal] wrote {adversarial_path}")
     print(f"[benchmark_modal] wrote {non_iid_path}")

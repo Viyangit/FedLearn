@@ -3,6 +3,9 @@ node_modules/
 
 # OS / editor
 .DS_Store
+.env
+.env.*
+!.env.example
 
 # FedLearn local runtime (never commit)
 .fedlearn/
@@ -15,3 +18,18 @@ node_modules/
 
 # Regenerated benchmarks (canonical copies under artifacts/release_hardening/)
 artifacts/efficiency/
+
+# Rust / native build outputs
+target/
+**/target/
+*.node
+
+# npm pack artifacts
+*.tgz
+
+# Accidental version marker files
+packages/*/0.2.*
+
+# Cursor (keep MCP config optional; never commit generated rules)
+.cursor/rules/
+.cursor/debug*.log

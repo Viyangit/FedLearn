@@ -63,11 +63,21 @@ fn deterministic_noise_is_stable_across_multiple_vectors() {
             ],
         ),
     ];
+    let vector_count = vectors.len();
     for (secret, round, expected) in vectors {
         let a = deterministic_noise_bytes(secret.as_bytes(), round, expected.len()).expect("noise-a");
         let b = deterministic_noise_bytes(secret.as_bytes(), round, expected.len()).expect("noise-b");
+        println!(
+            "CPU deterministic noise at seed={} step={}: {:?}",
+            secret, round, a
+        );
+        println!(
+            "WASM deterministic noise at seed={} step={}: {:?}",
+            secret, round, b
+        );
         assert_eq!(a, b);
         assert_eq!(a, expected);
     }
+    println!("Bitwise match: OK ({} vectors, 0 mismatches)", vector_count);
 }
 

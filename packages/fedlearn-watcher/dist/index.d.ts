@@ -1,0 +1,12 @@
+export { findCursorStateDbPath } from "./findCursorStore.js";
+export { findWorkspaceStateDbForFolder } from "./workspaceResolve.js";
+export { turnsFromAiServiceGenerations } from "./composerExtract.js";
+export { CursorReader } from "./cursorReader.js";
+export { extractTurnsFromJson, type CursorTurn } from "./extractTurns.js";
+export { extractStyleHints } from "./styleHints.js";
+export { ensureGitignore } from "./gitignore.js";
+export { loadWatcherState, saveWatcherState, watcherStatePath } from "./stateFile.js";
+export { writeFedlearnGeneratedMdcSync } from "./rulesWriter.js";
+export { FedLearnWatcherRun, type FedLearnWatcherOptions } from "./watcher.js";
+export { processTurnsIntoPairs, turnFingerprint, pairHash, type PendingTurn } from "./pairing.js";
+export { main, runInspect, runWatchCli } from "./cli.js";

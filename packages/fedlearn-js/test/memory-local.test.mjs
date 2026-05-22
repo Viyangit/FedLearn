@@ -15,9 +15,22 @@ test("local adapter persists session count across reload", async () => {
 });
 
 test("verifyLocalDataFlow reports no network egress", async () => {
-  const out = await verifyLocalDataFlow("no-egress-user");
+  const userId = `no-egress-${Math.random().toString(36).slice(2, 11)}`;
+  const out = await verifyLocalDataFlow(userId);
   assert.equal(out.memoryPersistenceVerified, true);
   assert.equal(out.networkEgressDetected, false);
   assert.equal(out.ok, true);
+});
+
+test("session auto-commits after five learned prompts", async () => {
+  const userId = "auto-commit-five-user";
+  const adapter = await LocalAdapter.load(userId);
+  const before = adapter.snapshot().sessionCount;
+  const session = adapter.beginSession("auto-five");
+  for (let i = 0; i < 5; i += 1) {
+    await session.learn([{ input: `p-${i}`, output: `o-${i}`, loss: 0.1 }]);
+  }
+  const after = (await LocalAdapter.load(userId)).snapshot().sessionCount;
+  assert.equal(after, before + 1);
 });
 

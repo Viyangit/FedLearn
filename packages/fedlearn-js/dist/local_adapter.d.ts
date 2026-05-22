@@ -23,10 +23,14 @@ export interface MemorySummary {
 export declare class LocalSession {
     private readonly sessionId;
     private readonly startTimestamp;
+    private readonly onAutoCommit?;
+    private readonly autoCommitThreshold;
     private readonly interactions;
-    constructor(sessionId: string, startTimestamp?: number);
+    private autoCommitIndex;
+    constructor(sessionId: string, startTimestamp?: number, onAutoCommit?: ((delta: SessionDelta) => Promise<void>) | undefined, autoCommitThreshold?: number);
     learn(interactions: SessionInteraction[]): Promise<void>;
     close(): Promise<SessionDelta>;
+    private buildDelta;
 }
 export declare class LocalAdapter {
     private record;

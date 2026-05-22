@@ -1,5 +1,5 @@
 {
-  "name": "fedlearn-monorepo",
+  "name": "@viyrockan/fedlearn-ui",
   "private": true,
   "version": "0.1.0",
   "description": "FedLearn workspace integration scaffold",
@@ -8,15 +8,33 @@
   ],
   "scripts": {
     "test:rust": "cargo test --workspace",
+    "build": "npm run build:js && npm run build:ui && npm run build:orchestrator && npm run build:watcher && npm run build:mcp && npm run build:cli && npm run build:adapter",
     "build:js": "npm --prefix packages/fedlearn-js run build",
     "build:ui": "npm --prefix packages/fedlearn-ui run build",
+    "build:orchestrator": "npm --prefix packages/fedlearn-orchestrator run build",
+    "build:watcher": "npm --prefix packages/fedlearn-watcher run build",
+    "build:mcp": "npm --prefix packages/fedlearn-mcp run build",
+    "build:cli": "npm --prefix packages/fedlearn-cli run build",
+    "build:adapter": "npm --prefix packages/fedlearn-adapter run build",
     "test:js": "npm --prefix packages/fedlearn-js test",
     "test:ui": "npm --prefix packages/fedlearn-ui test",
+    "test:orchestrator": "npm --prefix packages/fedlearn-orchestrator test",
+    "test:watcher": "npm --prefix packages/fedlearn-watcher test",
+    "guaranteed-chat": "node packages/fedlearn-orchestrator/bin/fedlearn-guaranteed-chat.mjs",
     "pack:js:dry-run": "cd packages/fedlearn-js && npm pack --dry-run",
     "pack:ui:dry-run": "cd packages/fedlearn-ui && npm pack --dry-run",
     "publish:js:dry-run": "cd packages/fedlearn-js && npm publish --dry-run",
     "publish:ui:dry-run": "cd packages/fedlearn-ui && npm publish --dry-run",
-    "verify:all": "npm run test:rust && npm run build:js && npm run build:ui && npm run test:js && npm run test:ui && npm run pack:js:dry-run && npm run pack:ui:dry-run && npm run publish:js:dry-run && npm run publish:ui:dry-run"
+    "watcher:inspect": "npm run build:watcher --silent && node packages/fedlearn-watcher/bin/fedlearn-watcher.mjs inspect",
+    "watcher:run": "npm run build:watcher --silent && node packages/fedlearn-watcher/bin/fedlearn-watcher.mjs run",
+    "friend-validation:targets": "npm run build:js --silent && node scripts/friend-validation/session-targets.mjs",
+    "friend-validation:check": "node scripts/friend-validation/check-acceptance.mjs",
+    "fedlearn": "node packages/fedlearn-cli/bin/fedlearn.mjs",
+    "test:cli": "npm --prefix packages/fedlearn-cli test",
+    "pack:cli:dry-run": "cd packages/fedlearn-cli && npm pack --dry-run",
+    "publish:cli:dry-run": "cd packages/fedlearn-cli && npm publish --dry-run",
+    "verify:all": "npm run test:rust && npm run build:js && npm run build:ui && npm run build:orchestrator && npm run build:watcher && npm run test:js && npm run test:ui && npm run test:orchestrator && npm run test:watcher && npm run test:cli && npm run pack:js:dry-run && npm run pack:ui:dry-run && npm run pack:cli:dry-run && npm run publish:js:dry-run && npm run publish:ui:dry-run && npm run publish:cli:dry-run",
+    "demo:live": "node demo/demo.mjs"
   }
 }
 

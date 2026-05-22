@@ -3,14 +3,14 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { LocalAdapter } from "fedlearn-core";
-import { personalizationFromSessions, renderDashboard } from "../src/dashboard.mjs";
+import { LocalAdapter, adaptivePct } from "fedlearn-core";
+import { renderDashboard } from "../src/dashboard.mjs";
 
 const thisDir = dirname(fileURLToPath(import.meta.url));
 const cliPath = resolve(thisDir, "../bin/fedlearn-ui.mjs");
 
-test("personalization starts at zero for zero sessions", () => {
-  assert.equal(personalizationFromSessions(0), 0);
+test("adaptive pct is zero for zero sessions", () => {
+  assert.equal(adaptivePct(0), 0);
 });
 
 test("dashboard render reflects explainer fields", () => {
@@ -22,7 +22,8 @@ test("dashboard render reflects explainer fields", () => {
     autoAdjustedRankLabel: "r=4 (auto-adjusted)"
   });
   assert.match(text, /Your AI Memory/);
-  assert.match(text, /0% personalised/);
+  assert.match(text, /Pattern coverage/);
+  assert.match(text, /No sessions recorded yet/);
 });
 
 test("one-shot ui command renders and exits", () => {
@@ -42,4 +43,3 @@ test("refresh source changes with retained sessions", async () => {
   const after = (await LocalAdapter.load(userId)).memorySummary().sessionsRetained;
   assert.equal(after, before + 1);
 });
-

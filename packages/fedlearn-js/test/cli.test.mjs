@@ -14,20 +14,20 @@ test("cli default command renders dashboard panel", () => {
     env: { ...process.env, FEDLEARN_USER_ID: "cli-test-render" }
   });
   assert.match(out, /Your AI Memory/);
-  assert.match(out, /Personal style learned/);
+  assert.match(out, /Pattern coverage/);
   assert.match(out, /Never leaves this device/);
 });
 
-test("cli default command shows 0 percent personalization for zero sessions", () => {
+test("cli default command shows no sessions label for zero sessions", () => {
   const out = execFileSync("node", [cliPath], {
     encoding: "utf-8",
     env: { ...process.env, FEDLEARN_USER_ID: "cli-test-zero" }
   });
-  assert.match(out, /0% personalised/);
+  assert.match(out, /No sessions recorded yet/);
 });
 
-test("cli personalization increases after retained sessions", async () => {
-  const userId = "cli-test-growth";
+test("cli pattern coverage reflects session label after retained sessions", async () => {
+  const userId = `cli-test-growth-${Math.random().toString(36).slice(2, 11)}`;
   const adapter = await LocalAdapter.load(userId);
   const session = adapter.beginSession("growth-session");
   await session.learn([{ input: "x", output: "y", loss: 0.1 }]);
@@ -36,7 +36,8 @@ test("cli personalization increases after retained sessions", async () => {
     encoding: "utf-8",
     env: { ...process.env, FEDLEARN_USER_ID: userId }
   });
-  assert.doesNotMatch(out, /0% personalised/);
+  assert.match(out, /1 session · /);
+  assert.match(out, /pattern coverage/);
 });
 
 test("cli health command returns json", () => {
@@ -51,4 +52,3 @@ test("cli verify-local command returns passing status", () => {
   const parsed = JSON.parse(out);
   assert.equal(parsed.ok, true);
 });
-

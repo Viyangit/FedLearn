@@ -33,9 +33,12 @@ console.log(wasmHealthCheck());
    - `npx fedlearn-core verify-local`
    - Expect output with `"ok": true` and `"networkEgressDetected": false`.
 4. Persistent terminal dashboard:
-   - `npx fedlearn-ui`
+   - `npx @viyrockan/fedlearn-ui`
    - Runs continuously and refreshes until `Ctrl+C`.
 5. Browser persistence proof:
    - Run browser app and confirm console save/load logs.
    - Inspect IndexedDB: `fedlearn` -> `adapters`.
+
+For the validation runbook (tests, demo, scripts, CLI checks),
+refer to `docs/VALIDATION_RUNBOOK.md`.
 

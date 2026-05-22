@@ -47,7 +47,14 @@ console.log(await verifyLocalDataFlow("verify-local-user"));
 - `npx fedlearn-core` -> default terminal dashboard.
 - `npx fedlearn-core health` -> JSON health payload.
 - `npx fedlearn-core verify-local` -> local-flow verification report (`ok` must be `true`).
-- `npx fedlearn-ui` -> persistent terminal dashboard loop until interrupted.
+- `npx @viyrockan/fedlearn-ui` -> persistent terminal dashboard loop until interrupted.
+
+## Validation Runbook
+- See `docs/VALIDATION_RUNBOOK.md` for validation commands (tests, demo, scripts, CLI checks).
+
+## MCP Integration
+- `@viyrockan/fedlearn-mcp` provides an MCP server that calls `LocalAdapter` to learn from `{ input, output }` turns.
+- Setup guide: `docs/MCP_INTEGRATION.md`.
 
 ## Rust Crate Public Modules
 From `crates/fedlearn-core/src/lib.rs`:
